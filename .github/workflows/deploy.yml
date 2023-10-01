@@ -28,7 +28,8 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v1'
 
       - name: Implante a função no Google Cloud Functions
-        run: |        
+        run: |
+          cd create-website        
           gcloud functions deploy create-website \
             --gen2 \
             --runtime go121 \
@@ -37,7 +38,8 @@ jobs:
             --allow-unauthenticated \
             --region southamerica-east1 \
             --memory 256MB \
-            --max-instances 1 
+            --max-instances 1
+          cd .. 
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
