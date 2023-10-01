@@ -19,5 +19,5 @@ jobs:
       - name: Deploy create-website function
         run: |
           cd create-website
-          firebase deploy --only functions --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          firebase deploy --only functions --token "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}"
           cd ..
