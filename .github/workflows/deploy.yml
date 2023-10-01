@@ -16,11 +16,8 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Login on Firebase
-        run: firebase login:ci --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-
       - name: Deploy create-website function
         run: |
           cd create-website
-          firebase deploy --only functions
+          firebase deploy --only functions --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
           cd ..
