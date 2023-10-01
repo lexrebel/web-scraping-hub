@@ -44,3 +44,10 @@ Thumbs.db
 
 # Ignore deployment artifacts (e.g., Cloud Function deployment)
 /.gcloudignore
+
+# Ignore Firestore log and data
+*-adminsdk.json
+.firebase/
+firestore-export-data.json
+firestore-debug.log
+ui-debug.log

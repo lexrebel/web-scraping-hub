@@ -1,0 +1,9 @@
+go 1.21.1
+
+use (
+	./create-website
+	./export-website-data
+	./get-website-data
+	./scrape-website
+	./update-website
+)
