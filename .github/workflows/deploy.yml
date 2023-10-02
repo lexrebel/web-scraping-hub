@@ -43,4 +43,3 @@ jobs:
           cd .. 
         env:
           GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
-          PROJECT_ID: '${{ secrets.GCP_PROJECT_ID }}'

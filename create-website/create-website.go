@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -13,7 +12,6 @@ import (
 
 const (
 	WEBSITE_KIND = "websites"
-	PROJECT_ID   = "PROJECT_ID"
 )
 
 type website struct {
@@ -62,7 +60,7 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 }
 
 func createClient(ctx context.Context) (*datastore.Client, error) {
-	client, err := datastore.NewClient(ctx, os.Getenv(PROJECT_ID))
+	client, err := datastore.NewClient(ctx, "web-scraping-hub")
 	if err != nil {
 		log.Printf("ERROR creating client: %v", err)
 		return nil, err

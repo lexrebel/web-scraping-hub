@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "source": "create-website",
-    "runtime": "go121"
-  }
-}
-
