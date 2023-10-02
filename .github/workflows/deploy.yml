@@ -35,7 +35,6 @@ jobs:
             --runtime go121 \
             --trigger-http \
             --entry-point CreateWebsite \
-            --allow-unauthenticated \
             --region southamerica-east1 \
             --memory 256MB \
             --max-instances 1
@@ -43,4 +42,5 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
 
