@@ -51,3 +51,6 @@ Thumbs.db
 firestore-export-data.json
 firestore-debug.log
 ui-debug.log
+
+# Ignore swagger generated files
+.api-gateway/
