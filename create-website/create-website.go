@@ -3,9 +3,9 @@ package create_website
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -13,7 +13,7 @@ import (
 
 const (
 	WEBSITE_KIND = "websites"
-	PROJECT_ID   = "web-scraping-hub"
+	PROJECT_ID   = "PROJECT_ID"
 )
 
 type website struct {
@@ -24,6 +24,11 @@ type website struct {
 }
 
 func CreateWebsite(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	ctx := context.Background()
 
 	client, err := createClient(ctx)
@@ -57,18 +62,11 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 }
 
 func createClient(ctx context.Context) (*datastore.Client, error) {
-	client, err := datastore.NewClient(ctx, PROJECT_ID)
+	client, err := datastore.NewClient(ctx, os.Getenv(PROJECT_ID))
 	if err != nil {
 		log.Printf("ERROR creating client: %v", err)
 		return nil, err
 	}
 
 	return client, nil
-}
-
-func main() {
-	http.HandleFunc("/websites", CreateWebsite)
-	port := "8080"
-	log.Printf("Listening on port %s...", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
