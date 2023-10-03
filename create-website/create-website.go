@@ -52,7 +52,7 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create an entity with the provided data
-	website := &Website{WebsiteDTO: &websiteDTO}
+	website := Website{WebsiteDTO: &websiteDTO}
 
 	// Set the timestamps for creation and update
 	now := time.Now()

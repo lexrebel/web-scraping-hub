@@ -8,7 +8,7 @@ schemes:
 paths:
   /websites:
     post:
-      summary: Create a new website
+      summary: Create a new website for web scraping.
       operationId: createWebsite
       consumes:
         - application/json
@@ -22,29 +22,78 @@ paths:
           description: Data of the website to be created
           required: true
           schema:
-            $ref: '#/definitions/Website'
+            $ref: '#/definitions/WebsiteDTO'
       responses:
         '201':
           description: Website created successfully
           schema:
             $ref: '#/definitions/Website'
+  /websites/{id}:
+    put:
+      summary: Update an existing website for web scraping.
+      operationId: updateWebsite
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: https://southamerica-east1-web-scraping-hub.cloudfunctions.net/update-website
+      parameters:
+        - in: path
+          name: id
+          description: ID of the website to update.
+          required: true
+          type: integer
+        - in: body
+          name: website
+          description: Updated website data.
+          required: true
+          schema:
+            $ref: '#/definitions/WebsiteDTO'
+      responses:
+        '200':
+          description: Website updated successfully.
+          schema:
+            $ref: '#/definitions/Website'
 security:
   - apiKey: []
 definitions:
+  WebsiteDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: ID of the website to update.
+      url:
+        type: string
+        description: Updated URL of the website.
+      name:
+        type: string
+        description: Updated name or identifier for the website.
+      rowSelector:
+        type: string
+        description: Updated selector for rows on the webpage.
+      columnSelectors:
+        type: array
+        items:
+          type: string
+        description: Updated list of selectors for columns within each row.
   Website:
     type: object
     properties:
-      title:
+      id:
         type: string
-        description: Title of the website
+        description: Unique identifier for the website.
+      websiteDTO:
+        $ref: '#/definitions/WebsiteDTO'
       createdAt:
         type: string
         format: date-time
-        description: Date and time of website creation
+        description: Timestamp for when the website entry was created.
       updatedAt:
         type: string
         format: date-time
-        description: Date and time of website update
+        description: Timestamp for when the website entry was last updated.
 securityDefinitions:
   apiKey:
     type: apiKey
