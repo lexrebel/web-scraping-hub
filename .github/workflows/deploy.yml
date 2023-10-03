@@ -37,7 +37,7 @@ jobs:
             --trigger-http \
             --entry-point CreateWebsite \
             --region southamerica-east1 \
-            --memory 128MB \
+            --memory 256MB \
             --no-allow-unauthenticated \
             --max-instances 1
           cd .. 
@@ -53,7 +53,7 @@ jobs:
             --trigger-http \
             --entry-point UpdateWebsite \
             --region southamerica-east1 \
-            --memory 128MB \
+            --memory 256MB \
             --no-allow-unauthenticated \
             --max-instances 1
           cd .. 
