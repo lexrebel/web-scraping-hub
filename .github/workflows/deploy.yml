@@ -28,7 +28,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v1'
 
-      - name: Deploy the function to Google Cloud Functions
+      - name: Deploy the function CreateWebsite to Google Cloud Functions
         run: |
           cd create-website        
           gcloud functions deploy create-website \
@@ -37,7 +37,23 @@ jobs:
             --trigger-http \
             --entry-point CreateWebsite \
             --region southamerica-east1 \
-            --memory 256MB \
+            --memory 128MB \
+            --no-allow-unauthenticated \
+            --max-instances 1
+          cd .. 
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
+      
+      - name: Deploy the function UpdateWebsite to Google Cloud Functions
+        run: |
+          cd update-website        
+          gcloud functions deploy update-website \
+            --gen2 \
+            --runtime go121 \
+            --trigger-http \
+            --entry-point UpdateWebsite \
+            --region southamerica-east1 \
+            --memory 128MB \
             --no-allow-unauthenticated \
             --max-instances 1
           cd .. 
