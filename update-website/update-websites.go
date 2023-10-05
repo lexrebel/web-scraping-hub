@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
+	"regexp"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -38,11 +38,17 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stringId := strings.TrimPrefix(r.URL.Path, "/update-website/")
+	re := regexp.MustCompile(`/update-website/(.+)`)
+	match := re.FindStringSubmatch(r.URL.Path)
+	stringId := ""
+	if len(match) > 1 {
+		stringId = match[1]
+	}
 	if stringId == "" {
 		http.Error(w, "Website ID is required", http.StatusBadRequest)
 		return
 	}
+	log.Println("Updating websites with id:", stringId)
 
 	websiteId, err := datastore.DecodeKey(stringId)
 	if err != nil {
