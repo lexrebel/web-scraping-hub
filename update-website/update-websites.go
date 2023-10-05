@@ -38,9 +38,13 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("-----> r.RequestURI:", r.RequestURI)
+
 	re := regexp.MustCompile(`/update-website?id=(.+)`)
+	log.Println("-----> r.URL.Path:", r.URL.Path)
+
 	match := re.FindStringSubmatch(r.URL.Path)
-	log.Println(match)
+	log.Println("-----> mach:", match)
 	stringId := ""
 	if len(match) > 1 {
 		stringId = match[1]
