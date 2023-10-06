@@ -48,7 +48,7 @@ type WebsiteScrape struct {
 
 // ScrapeWebsite is the HTTP function for web scraping a website.
 func ScrapeWebsite(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
