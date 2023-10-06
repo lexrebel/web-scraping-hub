@@ -55,6 +55,27 @@ paths:
           description: Website updated successfully.
           schema:
             $ref: '#/definitions/Website'
+  /scrapes/{id}:
+    put:
+      summary: Scrape a website that correspond the id.
+      operationId: scrapeWebsite
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: https://southamerica-east1-web-scraping-hub.cloudfunctions.net/scrape-website
+      parameters:
+        - in: path
+          name: id
+          description: ID of the website to scrape.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Website updated successfully.
+          schema:
+            $ref: '#/definitions/Scrape'
 security:
   - apiKey: []
 definitions:
@@ -94,6 +115,19 @@ definitions:
         type: string
         format: date-time
         description: Timestamp for when the website entry was last updated.
+  Scrape:
+    type: object
+    properties:
+      scrapeTime:
+        type: string
+        format: date-time
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            columnName:
+              type: string
 securityDefinitions:
   apiKey:
     type: apiKey

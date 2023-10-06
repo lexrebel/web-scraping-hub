@@ -59,3 +59,20 @@ jobs:
           cd .. 
         env:
           GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
+      
+      - name: Deploy the function ScrapeWebsite to Google Cloud Functions
+        run: |
+          cd update-website        
+          gcloud functions deploy scrape-website \
+            --gen2 \
+            --runtime go121 \
+            --trigger-http \
+            --entry-point ScrapeWebsite \
+            --region southamerica-east1 \
+            --memory 256MB \
+            --no-allow-unauthenticated \
+            --max-instances 1
+          cd .. 
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
+          
