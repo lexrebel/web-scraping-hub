@@ -38,7 +38,7 @@ type Scrapes struct {
 	ColumnSelectors []string       `json:"columnSelectors"`
 	CreatedAt       time.Time      `json:"createdAt"`
 	UpdatedAt       time.Time      `json:"updatedAt"`
-	Scrapes         []string
+	Scrapes         []string       `json:"scrapes"`
 }
 
 type WebsiteScrape struct {
