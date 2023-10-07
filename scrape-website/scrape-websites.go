@@ -31,19 +31,24 @@ type Website struct {
 }
 
 type Scrapes struct {
-	ID              *datastore.Key `json:"id" datastore:"-"`
-	URL             string         `json:"url"`
-	Name            string         `json:"name"`
-	RowSelector     string         `json:"rowSelector"`
-	ColumnSelectors []string       `json:"columnSelectors"`
-	CreatedAt       time.Time      `json:"createdAt"`
-	UpdatedAt       time.Time      `json:"updatedAt"`
-	Scrapes         []string       `json:"scrapes"`
+	ID              *datastore.Key     `json:"id" datastore:"-"`
+	URL             string             `json:"url"`
+	Name            string             `json:"name"`
+	RowSelector     string             `json:"rowSelector"`
+	CreatedAt       time.Time          `json:"createdAt"`
+	UpdatedAt       time.Time          `json:"updatedAt"`
+	ColumnSelectors []string           `json:"columnSelectors"`
+	Iterations      []WebsiteScrapeDTO `json:"iterations"`
 }
 
 type WebsiteScrape struct {
+	ScrapeTime time.Time           `json:"scrapeTime"`
+	Data       []map[string]string `json:"data"`
+}
+
+type WebsiteScrapeDTO struct {
 	ScrapeTime time.Time `json:"scrapeTime"`
-	Data       []map[string]string
+	Data       []byte    `json:"data"`
 }
 
 // ScrapeWebsite is the HTTP function for web scraping a website.
@@ -166,7 +171,7 @@ func scrapeWebsite(ctx context.Context, client *datastore.Client, website Websit
 		ScrapeTime: time.Now(),
 		Data:       scrapedData,
 	}
-	jsonScrapedData, err := serializeScrape(scrapeData)
+	jsonScrapedData, err := SerializeScrapeToBytes(scrapeData.Data)
 	if err != nil {
 		return nil, err
 
@@ -182,15 +187,20 @@ func scrapeWebsite(ctx context.Context, client *datastore.Client, website Websit
 			log.Printf("ERROR fetching existing Scrapes: %v", err)
 			return nil, err
 		}
-		// If the Scrapes entity doesn't exist, initialize it
-		scrapes = Scrapes{
-			ID:      website.ID,
-			Scrapes: make([]string, 0), // Initialize the slice
-		}
 	}
 
-	// Append the new scrape to the existing Scrapes
-	scrapes.Scrapes = append(scrapes.Scrapes, jsonScrapedData)
+	// Append the new scrape to the existing Scrapes and update data
+	scrapes.Iterations = append(scrapes.Iterations, WebsiteScrapeDTO{
+		ScrapeTime: scrapeData.ScrapeTime,
+		Data:       jsonScrapedData, // Initialize the slice
+	})
+	scrapes.ID = website.ID
+	scrapes.Name = website.Name
+	scrapes.RowSelector = website.RowSelector
+	scrapes.URL = website.URL
+	scrapes.ColumnSelectors = website.ColumnSelectors
+	scrapes.CreatedAt = website.CreatedAt
+	scrapes.UpdatedAt = website.UpdatedAt
 
 	// Save the updated Scrapes to Datastore
 	if _, err := client.Put(ctx, scrapesKey, &scrapes); err != nil {
@@ -202,12 +212,11 @@ func scrapeWebsite(ctx context.Context, client *datastore.Client, website Websit
 	return scrapedData, nil
 }
 
-// Serialize WebsiteScrape to JSON
-func serializeScrape(scrape WebsiteScrape) (string, error) {
+// SerializeScrapeToBytes serializes a []map[string]string to a byte slice.
+func SerializeScrapeToBytes(scrape []map[string]string) ([]byte, error) {
 	data, err := json.Marshal(scrape)
 	if err != nil {
-		log.Printf("ERROR marshaling scrape: %v", err)
-		return "", err
+		return nil, err
 	}
-	return string(data), nil
+	return data, nil
 }
