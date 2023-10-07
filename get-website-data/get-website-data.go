@@ -8,37 +8,25 @@ import (
 	"regexp"
 	"time"
 
-	"cloud.google.com/go/datastore"
+	"cloud.google.com/go/firestore"
+)
+
+const (
+	SCRAPES_COLLECTION = "scrapes"
 )
 
 type Scrapes struct {
-	ID              *datastore.Key  `json:"-" datastore:"-"`
+	ID              string          `json:"id" firestore:"-"`
 	URL             string          `json:"url"`
 	Name            string          `json:"name"`
 	RowSelector     string          `json:"rowSelector"`
-	ColumnSelectors []string        `json:"columnSelectors"`
 	CreatedAt       time.Time       `json:"createdAt"`
 	UpdatedAt       time.Time       `json:"updatedAt"`
+	ColumnSelectors []string        `json:"columnSelectors"`
 	Iterations      []WebsiteScrape `json:"iterations"`
 }
 
 type WebsiteScrape struct {
-	ScrapeTime time.Time `json:"scrapeTime"`
-	Data       []byte    `json:"data"`
-}
-
-type ScrapesDTO struct {
-	ID              *datastore.Key     `json:"id" datastore:"-"`
-	URL             string             `json:"url"`
-	Name            string             `json:"name"`
-	RowSelector     string             `json:"rowSelector"`
-	ColumnSelectors []string           `json:"columnSelectors"`
-	CreatedAt       time.Time          `json:"createdAt"`
-	UpdatedAt       time.Time          `json:"updatedAt"`
-	Iterations      []WebsiteScrapeDTO `json:"iterations"`
-}
-
-type WebsiteScrapeDTO struct {
 	ScrapeTime time.Time           `json:"scrapeTime"`
 	Data       []map[string]string `json:"data"`
 }
@@ -67,78 +55,41 @@ func GetWebsiteData(w http.ResponseWriter, r *http.Request) {
 	// Consulta o Scrapes no banco de dados com base no ID
 	client, err := createClient(ctx)
 	if err != nil {
-		log.Printf("ERROR creating Datastore client, err: %v", err)
+		log.Printf("ERROR creating Firestore client, err: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	key, err := datastore.DecodeKey(scrapesID)
-	if err != nil {
-		log.Printf("ERROR decoding Scrapes ID: %v", err)
-		http.Error(w, "Invalid Scrapes ID format. It should be a valid Datastore key.", http.StatusBadRequest)
-		return
-	}
-
+	scrapesDocRef := client.Collection(SCRAPES_COLLECTION).Doc(scrapesID)
 	var scrapes Scrapes
-	if err := client.Get(ctx, key, &scrapes); err != nil {
-		log.Printf("ERROR fetching Scrapes: %s", err)
-		http.Error(w, "Scrapes not found", http.StatusNotFound)
+
+	// Get the scrapes document
+	snapshot, err := scrapesDocRef.Get(ctx)
+	if err != nil {
+		log.Println("ERROR fetching document:", err)
+		http.Error(w, "Scrapes: "+scrapesID+" not found", http.StatusNotFound)
 		return
-	}
-	log.Println("------------>", scrapes)
-	scrapes.ID = key
 
-	scrapesDTO := ScrapesDTO{
-		ID:              scrapes.ID,
-		URL:             scrapes.URL,
-		Name:            scrapes.Name,
-		RowSelector:     scrapes.RowSelector,
-		ColumnSelectors: scrapes.ColumnSelectors,
-		CreatedAt:       scrapes.CreatedAt,
-		UpdatedAt:       scrapes.UpdatedAt,
-		Iterations:      TransformWebsiteScrapesToDTO(scrapes.Iterations),
+	} else {
+		err := snapshot.DataTo(&scrapes)
+		if err != nil {
+			log.Fatalf("Error decoding the document: %v", err)
+		}
 	}
+	scrapes.ID = scrapesID
 
-	// Retorna o Scrapes obtido como resposta
+	// Return the extracted data as response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(scrapesDTO)
+	json.NewEncoder(w).Encode(scrapes)
 }
 
 // createClient creates a new Datastore client.
-func createClient(ctx context.Context) (*datastore.Client, error) {
-	client, err := datastore.NewClient(ctx, "web-scraping-hub")
+func createClient(ctx context.Context) (*firestore.Client, error) {
+	client, err := firestore.NewClient(ctx, "web-scraping-hub")
 	if err != nil {
 		log.Printf("ERROR creating client: %v", err)
 		return nil, err
 	}
 
 	return client, nil
-}
-
-// TransformWebsiteScrapesToDTO transforms a list of WebsiteScrape to a list of WebsiteScrapeDTO.
-func TransformWebsiteScrapesToDTO(scrapes []WebsiteScrape) []WebsiteScrapeDTO {
-	var dtoList []WebsiteScrapeDTO
-
-	for _, scrape := range scrapes {
-		dto := WebsiteScrapeDTO{
-			ScrapeTime: scrape.ScrapeTime,
-		}
-
-		// Deserialize the Data field using the existing function
-		dto.Data, _ = DeserializeBytesToScrape(scrape.Data)
-
-		dtoList = append(dtoList, dto)
-	}
-
-	return dtoList
-}
-
-// DeserializeBytesToScrape deserializes a byte slice to a []map[string]string.
-func DeserializeBytesToScrape(data []byte) ([]map[string]string, error) {
-	var scrape []map[string]string
-	err := json.Unmarshal(data, &scrape)
-	if err != nil {
-		return nil, err
-	}
-	return scrape, nil
 }

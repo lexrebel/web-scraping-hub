@@ -38,6 +38,8 @@ cloud.google.com/go/datalabeling v0.8.1/go.mod h1:XS62LBSVPbYR54GfYQsPXZjTW8UxCK
 cloud.google.com/go/dataplex v1.9.1/go.mod h1:7TyrDT6BCdI8/38Uvp0/ZxBslOslP2X2MPDucliyvSE=
 cloud.google.com/go/dataproc/v2 v2.2.0/go.mod h1:lZR7AQtwZPvmINx5J87DSOOpTfof9LVZju6/Qo4lmcY=
 cloud.google.com/go/dataqna v0.8.1/go.mod h1:zxZM0Bl6liMePWsHA8RMGAfmTG34vJMapbHAxQ5+WA8=
+cloud.google.com/go/datastore v1.14.0 h1:Mq0ApTRdLW3/dyiw+DkjTk0+iGIUvkbzaC8sfPwWTH4=
+cloud.google.com/go/datastore v1.14.0/go.mod h1:GAeStMBIt9bPS7jMJA85kgkpsMkvseWWXiaHya9Jes8=
 cloud.google.com/go/datastream v1.10.0/go.mod h1:hqnmr8kdUBmrnk65k5wNRoHSCYksvpdZIcZIEl8h43Q=
 cloud.google.com/go/deploy v1.13.0/go.mod h1:tKuSUV5pXbn67KiubiUNUejqLs4f5cxxiCNCeyl0F2g=
 cloud.google.com/go/dialogflow v1.43.0/go.mod h1:pDUJdi4elL0MFmt1REMvFkdsUTYSHq+rTCS8wg0S3+M=
@@ -49,7 +51,6 @@ cloud.google.com/go/errorreporting v0.3.0/go.mod h1:xsP2yaAp+OAW4OIm60An2bbLpqIh
 cloud.google.com/go/essentialcontacts v1.6.2/go.mod h1:T2tB6tX+TRak7i88Fb2N9Ok3PvY3UNbUsMag9/BARh4=
 cloud.google.com/go/eventarc v1.13.0/go.mod h1:mAFCW6lukH5+IZjkvrEss+jmt2kOdYlN8aMx3sRJiAI=
 cloud.google.com/go/filestore v1.7.1/go.mod h1:y10jsorq40JJnjR/lQ8AfFbbcGlw3g+Dp8oN7i7FjV4=
-cloud.google.com/go/firestore v1.13.0/go.mod h1:QojqqOh8IntInDUSTAh0c8ZsPYAr68Ma8c5DWOy8xb8=
 cloud.google.com/go/functions v1.15.1/go.mod h1:P5yNWUTkyU+LvW/S9O6V+V423VZooALQlqoXdoPz5AE=
 cloud.google.com/go/gkebackup v1.3.1/go.mod h1:vUDOu++N0U5qs4IhG1pcOnD1Mac79xWy6GoBFlWCWBU=
 cloud.google.com/go/gkeconnect v0.8.1/go.mod h1:KWiK1g9sDLZqhxB2xEuPV8V9NYzrqTUmQR9shJHpOZw=
@@ -67,7 +68,6 @@ cloud.google.com/go/language v1.11.0/go.mod h1:uDx+pFDdAKTY8ehpWbiXyQdz8tDSYLJbQ
 cloud.google.com/go/lifesciences v0.9.1/go.mod h1:hACAOd1fFbCGLr/+weUKRAJas82Y4vrL3O5326N//Wc=
 cloud.google.com/go/logging v1.8.1/go.mod h1:TJjR+SimHwuC8MZ9cjByQulAMgni+RkXeI3wwctHJEI=
 cloud.google.com/go/longrunning v0.5.0/go.mod h1:0JNuqRShmscVAhIACGtskSAWtqtOoPkwP0YF1oVEchc=
-cloud.google.com/go/longrunning v0.5.1/go.mod h1:spvimkwdz6SPWKEt/XBij79E9fiTkHSQl/fRUUQJYJc=
 cloud.google.com/go/managedidentities v1.6.1/go.mod h1:h/irGhTN2SkZ64F43tfGPMbHnypMbu4RB3yl8YcuEak=
 cloud.google.com/go/maps v1.4.0/go.mod h1:6mWTUv+WhnOwAgjVsSW2QPPECmW+s3PcRyOa9vgG/5s=
 cloud.google.com/go/mediatranslation v0.8.1/go.mod h1:L/7hBdEYbYHQJhX2sldtTO5SZZ1C1vkapubj0T2aGig=
@@ -133,6 +133,7 @@ github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEW
 github.com/google/go-pkcs11 v0.2.1-0.20230907215043-c6f79328ddf9/go.mod h1:6eQoGcuNJpa7jnd5pMGdkSaQpNDYvPlXWMcjXXThLlY=
 github.com/google/martian/v3 v3.3.2/go.mod h1:oBOf6HBosgwRXnUGWUB05QECsc6uvmMiJ3+6W4l/CUk=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.3.1 h1:KjJaJ9iWZ3jOFZIf1Lqf4laDRCasjl0BCmnEGxkdLb4=
 github.com/google/uuid v1.3.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/googleapis/enterprise-certificate-proxy v0.2.3/go.mod h1:AwSRAtLfXpU5Nm3pW+v7rGDHp09LsPtGY9MduiEsR9k=
 github.com/googleapis/enterprise-certificate-proxy v0.2.5/go.mod h1:RxW0N9901Cko1VOCW3SXCpWP+mlIEkk2tP7jnHy9a3w=
@@ -148,13 +149,13 @@ golang.org/x/net v0.11.0/go.mod h1:2L/ixqYpgIVXmeoSA/4Lu7BzTG4KIyPIryS4IsOd1oQ=
 golang.org/x/net v0.12.0/go.mod h1:zEVYFnQC7m/vmpQFELhcD1EWkZlX69l4oqgmer6hfKA=
 golang.org/x/net v0.14.0/go.mod h1:PpSgVXXLK0OxS0F31C1/tv6XNguvCrnXIDrFMspZIUI=
 golang.org/x/oauth2 v0.10.0/go.mod h1:kTpgurOux7LqtuxjuyZa4Gj2gdezIt/jQtGnNFfypQI=
+golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.9.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.10.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.11.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.12.0/go.mod h1:owVbMEjm3cBLCHdkQu9b1opXd4ETQWc3BhuQGKgXgvU=
 golang.org/x/text v0.11.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
 golang.org/x/text v0.12.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
-golang.org/x/time v0.3.0/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
 golang.org/x/tools v0.6.0/go.mod h1:Xwgl3UAJ/d3gWutnCtw505GrjyAbvKui8lOU390QaIU=
 golang.org/x/tools v0.10.0/go.mod h1:UJwyiVBsOA2uwvK/e5OY3GTpDUJriEd+/YlqAwLPmyM=
 google.golang.org/api v0.126.0/go.mod h1:mBwVAtz+87bEN6CbA1GtZPDOqY2R5ONPqJeIlvyo4Aw=

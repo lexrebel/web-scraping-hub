@@ -7,30 +7,27 @@ import (
 	"net/http"
 	"time"
 
-	"cloud.google.com/go/datastore"
+	"cloud.google.com/go/firestore"
 )
 
 const (
 	COLLECTION = "websites"
 )
 
-// WebsiteDTO represents the input data for creating a website.
 type WebsiteDTO struct {
-	URL             string   `json:"url"`             // URL of the website to scrape
-	Name            string   `json:"name"`            // Name or identifier for the website
-	RowSelector     string   `json:"rowSelector"`     // Selector for rows on the webpage
-	ColumnSelectors []string `json:"columnSelectors"` // List of selectors for columns within each row
+	URL             string   `json:"url" firestore:"url"`
+	Name            string   `json:"name" firestore:"name"`
+	RowSelector     string   `json:"rowSelector" firestore:"rowSelector"`
+	ColumnSelectors []string `json:"columnSelectors" firestore:"columnSelectors"`
 }
 
-// Website represents the structure for storing website data in Datastore.
 type Website struct {
-	ID *datastore.Key `json:"id" datastore:"-"`
+	ID string `json:"id" firestore:"-"`
 	*WebsiteDTO
-	CreatedAt time.Time `json:"createdAt"` // Timestamp for when the website entry was created
-	UpdatedAt time.Time `json:"updatedAt"` // Timestamp for when the website entry was last updated
+	CreatedAt time.Time `json:"createdAt" firestore:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" firestore:"updatedAt"`
 }
 
-// CreateWebsite is the HTTP handler function for creating a new website.
 func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -40,7 +37,7 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	client, err := createClient(ctx)
 	if err != nil {
-		log.Printf("ERROR creating Datastore client, err: %v", err)
+		log.Printf("ERROR creating Firestore client, err: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -59,25 +56,26 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 	website.CreatedAt = now
 	website.UpdatedAt = now
 
-	key := datastore.IncompleteKey(COLLECTION, nil)
-	key, err = client.Put(ctx, key, &website)
+	// Add the website to Firestore
+	ref, _, err := client.Collection(COLLECTION).Add(ctx, website)
 	if err != nil {
-		log.Printf("ERROR setting a website: %s", err)
+		log.Printf("ERROR adding a website to Firestore: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	website.ID = key
+	// Set the ID in the website struct
+	website.ID = ref.ID
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(website)
 }
 
 // createClient creates a new Datastore client.
-func createClient(ctx context.Context) (*datastore.Client, error) {
-	client, err := datastore.NewClient(ctx, "web-scraping-hub")
+func createClient(ctx context.Context) (*firestore.Client, error) {
+	client, err := firestore.NewClient(ctx, "web-scraping-hub")
 	if err != nil {
-		log.Printf("ERROR creating client: %v", err)
-		return nil, err
+		log.Fatalf("Failed to create Firestore client: %v", err)
 	}
 
 	return client, nil

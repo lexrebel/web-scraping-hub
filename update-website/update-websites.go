@@ -8,30 +8,27 @@ import (
 	"regexp"
 	"time"
 
-	"cloud.google.com/go/datastore"
+	"cloud.google.com/go/firestore"
 )
 
 const (
 	COLLECTION = "websites"
 )
 
-// WebsiteDTO represents the input data for updating a website.
 type WebsiteDTO struct {
-	URL             string   `json:"url"`             // Updated URL of the website
-	Name            string   `json:"name"`            // Updated name or identifier for the website
-	RowSelector     string   `json:"rowSelector"`     // Updated selector for rows on the webpage
-	ColumnSelectors []string `json:"columnSelectors"` // Updated list of selectors for columns within each row
+	URL             string   `json:"url" firestore:"url"`
+	Name            string   `json:"name" firestore:"name"`
+	RowSelector     string   `json:"rowSelector" firestore:"rowSelector"`
+	ColumnSelectors []string `json:"columnSelectors" firestore:"columnSelectors"`
 }
 
-// Website represents the structure for storing website data in Datastore.
 type Website struct {
-	ID *datastore.Key `json:"id" datastore:"-"`
+	ID string `json:"id" firestore:"-"`
 	*WebsiteDTO
-	CreatedAt time.Time `json:"createdAt"` // Timestamp for when the website entry was created
-	UpdatedAt time.Time `json:"updatedAt"` // Timestamp for when the website entry was last updated
+	CreatedAt time.Time `json:"createdAt" firestore:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" firestore:"updatedAt"`
 }
 
-// UpdateWebsite is the HTTP handler function for updating a website.
 func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -40,68 +37,52 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 
 	re := regexp.MustCompile(`/?id=(.+)`)
 	match := re.FindStringSubmatch(r.RequestURI)
-	stringId := ""
+	stringID := ""
 	if len(match) > 1 {
-		stringId = match[1]
+		stringID = match[1]
 	}
-	if stringId == "" {
+	if stringID == "" {
 		http.Error(w, "Website ID is required", http.StatusBadRequest)
 		return
 	}
-	log.Println("Updating websites with id:", stringId)
-
-	websiteId, err := datastore.DecodeKey(stringId)
-	if err != nil {
-		http.Error(w, "Website ID malformed", http.StatusBadRequest)
-		return
-	}
+	log.Println("Updating website with ID:", stringID)
 
 	ctx := context.Background()
 	client, err := createClient(ctx)
 	if err != nil {
-		log.Printf("ERROR creating Datastore client, err: %v", err)
+		log.Printf("ERROR creating Firestore client, err: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	websiteRef := client.Collection(COLLECTION).Doc(stringID)
 	var websiteDTO WebsiteDTO
 	if err := json.NewDecoder(r.Body).Decode(&websiteDTO); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	var existingWebsite Website
-	if err := client.Get(ctx, websiteId, &existingWebsite); err != nil {
-		log.Printf("ERROR fetching website: %s", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+	updatedWebsite := Website{
+		ID:         websiteRef.ID,
+		WebsiteDTO: &websiteDTO,
+		UpdatedAt:  time.Now(),
 	}
 
-	// Update the fields with new data
-	existingWebsite.ID = websiteId
-	existingWebsite.URL = websiteDTO.URL
-	existingWebsite.Name = websiteDTO.Name
-	existingWebsite.RowSelector = websiteDTO.RowSelector
-	existingWebsite.ColumnSelectors = websiteDTO.ColumnSelectors
-	existingWebsite.UpdatedAt = time.Now()
-
-	// Save the updated website entity back to Datastore
-	if _, err := client.Put(ctx, websiteId, &existingWebsite); err != nil {
+	_, err = websiteRef.Set(ctx, updatedWebsite)
+	if err != nil {
 		log.Printf("ERROR updating website: %s", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(existingWebsite)
+	json.NewEncoder(w).Encode(updatedWebsite)
 }
 
-// createClient creates a new Datastore client.
-func createClient(ctx context.Context) (*datastore.Client, error) {
-	client, err := datastore.NewClient(ctx, "web-scraping-hub")
+func createClient(ctx context.Context) (*firestore.Client, error) {
+	client, err := firestore.NewClient(ctx, "web-scraping-hub")
 	if err != nil {
-		log.Printf("ERROR creating client: %v", err)
-		return nil, err
+		log.Fatalf("Failed to create Firestore client: %v", err)
 	}
 
 	return client, nil
