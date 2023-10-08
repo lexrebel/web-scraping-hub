@@ -58,16 +58,16 @@ When the project is deployed on GCP, the same five endpoints are available, but 
 
 ```bash
 # Create a website (POST)
-curl -X POST https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/websites -H "X-API-Key: your_api_key_here
+curl -X POST https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/websites -H "X-API-Key: your_api_key_here"
 
 # Update a website (PUT)
-curl -X PUT https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/websites/{website_id} -H "X-API-Key: your_api_key_here
+curl -X PUT https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/websites/{website_id} -H "X-API-Key: your_api_key_here"
 
 # Scrape a website (PUT)
-curl -X PUT https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/scrapes/{website_id} -H "X-API-Key: your_api_key_here
+curl -X PUT https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/scrapes/{website_id} -H "X-API-Key: your_api_key_here"
 
 # Get website data (GET)
-curl -X GET https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/data/{website_id} -H "X-API-Key: your_api_key_here
+curl -X GET https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/data/{website_id} -H "X-API-Key: your_api_key_here"
 
 # Export website data as CSV (GET)
 curl -X GET https://web-scraping-hub-v4-7dd7ezdt.uc.gateway.dev/export/{website_id} -H "X-API-Key: your_api_key_here"
