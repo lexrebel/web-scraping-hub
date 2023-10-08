@@ -8,7 +8,7 @@ schemes:
 paths:
   /websites:
     post:
-      summary: Create a new website for web scraping.
+      summary: Create a new website for web scraping
       operationId: createWebsite
       consumes:
         - application/json
@@ -28,9 +28,13 @@ paths:
           description: Website created successfully
           schema:
             $ref: '#/definitions/Website'
+        "400":
+          description: "Bad request"
+        "500":
+          description: "Internal server error"
   /websites/{id}:
     put:
-      summary: Update an existing website for web scraping.
+      summary: Update an existing website for web scraping
       operationId: updateWebsite
       consumes:
         - application/json
@@ -41,7 +45,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: ID of the website to update.
+          description: ID of the website to update
           required: true
           type: integer
         - in: body
@@ -52,12 +56,18 @@ paths:
             $ref: '#/definitions/WebsiteDTO'
       responses:
         '200':
-          description: Website updated successfully.
+          description: Website updated successfully
           schema:
             $ref: '#/definitions/Website'
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Website not found"
+        "500":
+          description: "Internal server error"
   /scrapes/{id}:
     put:
-      summary: Scrape a website that correspond the id.
+      summary: Scrape a website that correspond the id
       operationId: scrapeWebsite
       consumes:
         - application/json
@@ -68,14 +78,72 @@ paths:
       parameters:
         - in: path
           name: id
-          description: ID of the website to scrape.
+          description: ID of the website to scrape
           required: true
           type: integer
       responses:
         '200':
-          description: Website updated successfully.
+          description: Website scraped successfully
           schema:
             $ref: '#/definitions/Scrape'
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Website not found"
+        "500":
+          description: "Internal server error"
+  /data/{id}:
+    get:
+      summary: Get website data by id.
+      operationId: getWebsiteData
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: https://southamerica-east1-web-scraping-hub.cloudfunctions.net/get-website-data
+      parameters:
+        - in: path
+          name: id
+          description: ID of the website
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Website updated successfully
+          schema:
+            $ref: '#/definitions/Scrapes'
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Scrapes not found"
+        "500":
+          description: "Internal server error"
+  /export/{id}:
+    get:
+      summary: Export website data as CSV by id.
+      operationId: exportWebsiteData
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: https://southamerica-east1-web-scraping-hub.cloudfunctions.net/export-website-data
+      parameters:
+        - in: path
+          name: id
+          description: ID of the website
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: "Successful response"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Scrapes not found"
+        "500":
+          description: "Internal server error"
 security:
   - apiKey: []
 definitions:
@@ -128,6 +196,42 @@ definitions:
           properties:
             columnName:
               type: string
+  Scrapes:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      url:
+        type: "string"
+      name:
+        type: "string"
+      rowSelector:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      columnSelectors:
+        type: "array"
+        items:
+          type: "string"
+      iterations:
+        type: "array"
+        items:
+          $ref: "#/definitions/WebsiteScrape"
+  WebsiteScrape:
+    type: "object"
+    properties:
+      scrapeTime:
+        type: "string"
+        format: "date-time"
+      data:
+        type: "array"
+        items:
+          type: "object"
+
 securityDefinitions:
   apiKey:
     type: apiKey
