@@ -28,7 +28,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v1'
 
-      - name: Deploy the function CreateWebsite to Google Cloud Functions
+      - name: Deploy the function CreateWebsite
         run: |
           cd create-website        
           gcloud functions deploy create-website \
@@ -44,7 +44,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
       
-      - name: Deploy the function UpdateWebsite to Google Cloud Functions
+      - name: Deploy the function UpdateWebsite
         run: |
           cd update-website        
           gcloud functions deploy update-website \
@@ -60,7 +60,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
       
-      - name: Deploy the function ScrapeWebsite to Google Cloud Functions
+      - name: Deploy the function ScrapeWebsite
         run: |
           cd scrape-website        
           gcloud functions deploy scrape-website \
@@ -68,6 +68,38 @@ jobs:
             --runtime go121 \
             --trigger-http \
             --entry-point ScrapeWebsite \
+            --region southamerica-east1 \
+            --memory 256MB \
+            --no-allow-unauthenticated \
+            --max-instances 1
+          cd .. 
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Deploy the function GetWebsiteData
+        run: |
+          cd get-website-data        
+          gcloud functions deploy get-website-data \
+            --gen2 \
+            --runtime go121 \
+            --trigger-http \
+            --entry-point GetWebsiteData \
+            --region southamerica-east1 \
+            --memory 256MB \
+            --no-allow-unauthenticated \
+            --max-instances 1
+          cd .. 
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Deploy the function ExportWebsiteData
+        run: |
+          cd export-website-data        
+          gcloud functions deploy export-website-data \
+            --gen2 \
+            --runtime go121 \
+            --trigger-http \
+            --entry-point ExportWebsiteData \
             --region southamerica-east1 \
             --memory 256MB \
             --no-allow-unauthenticated \
